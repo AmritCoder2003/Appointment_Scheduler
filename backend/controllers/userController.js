@@ -74,7 +74,7 @@ export const userInfo=async (req,res)=>{
         return res.status(404).json({message:"User not found"});
      }
      console.log(userinfo);
-     return res.status(200).json({message:"User found",name:userinfo.name,email:userinfo.email});
+     return res.status(200).json({message:"User found",name:userinfo.name,email:userinfo.email,isAdmin:userinfo.isAdmin});
    }catch(err){
     console.log(err);
     return res.status(500).json({message:err});

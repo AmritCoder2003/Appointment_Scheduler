@@ -13,6 +13,22 @@ const userSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+    isAdmin:{
+        type:Boolean,
+        default:false
+    },
+    isDoctor:{
+        type:Boolean,
+        default:false
+    },
+    watchednoti: {
+        type: Array,
+        default: []
+    },
+    unwatchednoti: {
+        type: Array,
+        default: []
+    }
     
 },
 {timestamps:true});

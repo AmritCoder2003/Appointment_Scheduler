@@ -5,8 +5,9 @@ function Home2() {
     useEffect(() => {
         const getData=async()=>{
             try{
-                const response = await axios.get("http://localhost:8000/api/user/userInfo",
-                {
+                const response = await axios.post("http://localhost:8000/api/user/userInfo",
+                   
+                {},{
                     headers:{
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
@@ -17,6 +18,7 @@ function Home2() {
                 console.log(error);
             }
         }
+        getData();
     }, []);
     return (
         <Layout>

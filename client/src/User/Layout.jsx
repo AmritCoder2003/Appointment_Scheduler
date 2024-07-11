@@ -6,10 +6,12 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import GroupIcon from '@mui/icons-material/Group';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 240;
 const userMenu = [
@@ -17,7 +19,14 @@ const userMenu = [
     { title: 'Appointments', path: '/appointments', icon: <ScheduleIcon /> },
     { title: 'Apply Doctor', path: '/applydoctor', icon: <LocalHospitalIcon /> },
     { title: 'Profile', path: '/profile', icon: <AccountCircleIcon /> },
-    { title: 'Logout', path: '/logout', icon: <ExitToAppIcon /> },
+    
+];
+const adminMenu = [
+  { title: 'Home', path: '/home2', icon: <HomeIcon /> },
+  {title:'Users',path:'/users',icon:<AccountCircleIcon/>},
+  {title:'Doctors',path:'/doctors',icon:<GroupIcon/>},
+  { title: 'Profile', path: '/profile', icon: <LocalHospitalIcon /> },
+  
 ];
 
 const Layout = ({ children }) => {
@@ -25,11 +34,13 @@ const Layout = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  const user = useSelector((state) => state.user?.user);
+  // console.log(user);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
+  const renderMenu=user?.isAdmin?adminMenu:userMenu;
+  // console.log(user);
   const drawer = (
     <Box sx={{ overflow: 'auto', backgroundColor: '#3f51b5', color: 'white', height: '100%' }}>
       <Toolbar>
@@ -38,15 +49,24 @@ const Layout = ({ children }) => {
         </Typography>
       </Toolbar>
       <List>
-        {userMenu.map((item, index) => (
+        {renderMenu.map((item, index) => (
           <ListItem button key={index} onClick={() => navigate(item.path)}>
             <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
             <ListItemText primary={item.title} />
           </ListItem>
         ))}
       </List>
+      <ListItem button  onClick={() =>{
+        localStorage.removeItem('token');
+        navigate('/login');
+      }}>
+        <ListItemIcon sx={{ color: 'white' }}><ExitToAppIcon /></ListItemIcon>
+        <ListItemText primary="Logout" />
+      </ListItem>
     </Box>
   );
+
+ 
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -68,9 +88,9 @@ const Layout = ({ children }) => {
               </Badge>
             </IconButton>
             <Typography variant="body1" sx={{ ml: 2 }}>
-              name
+              {user?.name || 'Guest'}
             </Typography>
-            <Avatar sx={{ ml: 2 }}>N</Avatar>
+            <Avatar sx={{ ml: 2 }}>{user?.name?.charAt(0) || 'G'}</Avatar>
           </Box>
         </Toolbar>
       </AppBar>
