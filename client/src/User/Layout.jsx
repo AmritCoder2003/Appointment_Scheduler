@@ -17,109 +17,126 @@ const drawerWidth = 240;
 const userMenu = [
     { title: 'Home', path: '/home2', icon: <HomeIcon /> },
     { title: 'Appointments', path: '/appointments', icon: <ScheduleIcon /> },
-    { title: 'Apply Doctor', path: '/applydoctor', icon: <LocalHospitalIcon /> },
+    { title: 'Apply Doctor', path: '/docForm', icon: <LocalHospitalIcon /> },
     { title: 'Profile', path: '/profile', icon: <AccountCircleIcon /> },
-    
 ];
 const adminMenu = [
-  { title: 'Home', path: '/home2', icon: <HomeIcon /> },
-  {title:'Users',path:'/users',icon:<AccountCircleIcon/>},
-  {title:'Doctors',path:'/doctors',icon:<GroupIcon/>},
-  { title: 'Profile', path: '/profile', icon: <LocalHospitalIcon /> },
-  
+    { title: 'Home', path: '/home2', icon: <HomeIcon /> },
+    { title: 'Users', path: '/users', icon: <AccountCircleIcon /> },
+    { title: 'Doctors', path: '/doctors', icon: <GroupIcon /> },
+    { title: 'Profile', path: '/profile', icon: <LocalHospitalIcon /> },
 ];
 
 const Layout = ({ children }) => {
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const user = useSelector((state) => state.user?.user);
-  // console.log(user);
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-  const renderMenu=user?.isAdmin?adminMenu:userMenu;
-  // console.log(user);
-  const drawer = (
-    <Box sx={{ overflow: 'auto', backgroundColor: '#3f51b5', color: 'white', height: '100%' }}>
-      <Toolbar>
-        <Typography variant="h6" sx={{ ml: 2 }} noWrap component="div">
-          Scheduler
-        </Typography>
-      </Toolbar>
-      <List>
-        {renderMenu.map((item, index) => (
-          <ListItem button key={index} onClick={() => navigate(item.path)}>
-            <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.title} />
-          </ListItem>
-        ))}
-      </List>
-      <ListItem button  onClick={() =>{
-        localStorage.removeItem('token');
-        navigate('/login');
-      }}>
-        <ListItemIcon sx={{ color: 'white' }}><ExitToAppIcon /></ListItemIcon>
-        <ListItemText primary="Logout" />
-      </ListItem>
-    </Box>
-  );
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const user = useSelector((state) => state.user?.user);
+    const [selectedItem, setSelectedItem] = useState("/home2");
 
- 
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` } }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          {isMobile && (
-            <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle}>
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Typography variant="h6" noWrap component="div">
-            Header
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <Typography variant="body1" sx={{ ml: 2 }}>
-              {user?.name || 'Guest'}
-            </Typography>
-            <Avatar sx={{ ml: 2 }}>{user?.name?.charAt(0) || 'G'}</Avatar>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <Box component="nav">
-        <Drawer
-          variant={isMobile ? 'temporary' : 'permanent'}
-          open={isMobile ? mobileOpen : true}
-          onClose={handleDrawerToggle}
-          sx={{
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
-        <Toolbar />
-        <Typography variant="h4" gutterBottom>
-          Main Content
-        </Typography>
-        <Box>
-          {children}
+    const handleMenuItemClick = (path) => {
+        setSelectedItem(path);
+        navigate(path);
+    };
+
+    const renderMenu = user?.isAdmin ? adminMenu : userMenu;
+
+    const drawer = (
+        <Box sx={{ overflow: 'auto', backgroundColor: '#3f51b5', color: 'white', height: '100%' }}>
+            <Toolbar>
+               
+            </Toolbar>
+            <List>
+                {renderMenu.map((item, index) => (
+                    <ListItem 
+                        button 
+                        key={index} 
+                        onClick={() => handleMenuItemClick(item.path)}
+                        sx={{ 
+                            backgroundColor: selectedItem === item.path ? '#303f9f' : 'inherit',
+                            '&:hover': {
+                                backgroundColor: '#303f9f',
+                            },
+                        }}
+                    >
+                        <ListItemIcon sx={{ color: 'white' }}>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.title} />
+                    </ListItem>
+                ))}
+            </List>
+            <ListItem button onClick={() => {
+                localStorage.removeItem('token');
+                navigate('/login');
+            }}>
+                <ListItemIcon sx={{ color: 'white' }}><ExitToAppIcon /></ListItemIcon>
+                <ListItemText primary="Logout" />
+            </ListItem>
         </Box>
-      </Box>
-    </Box>
-  );
+    );
+
+    return (
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <AppBar position="fixed" sx={{ width: { md: `calc(100% - ${drawerWidth}px)` }, ml: { md: `${drawerWidth}px` } }}>
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                    {isMobile && (
+                        <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle}>
+                            <MenuIcon />
+                        </IconButton>
+                    )}
+                    <Typography variant="h6" noWrap component="div">
+                        Appointment Scheduler
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton onClick={() => navigate('/notifications')} color="inherit">
+                            
+                            <Badge  badgeContent={user?.noti?.length || 0} color="error">
+                                <NotificationsIcon />
+                            </Badge>
+                        </IconButton>
+                        {user ? (
+                            <>
+                                <Typography variant="body1" sx={{ ml: 2 }}>
+                                    {user.isAdmin ? 'admin' : user.name || 'Guest'}
+                                </Typography>
+                                <Avatar sx={{ ml: 2 }}>{user.isAdmin ? 'Ad' : user.name?.charAt(0) || 'G'}</Avatar>
+                            </>
+                        ) : (
+                            <Typography variant="body1" sx={{ ml: 2 }}>
+                                Guest
+                            </Typography>
+                        )}
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            <Box component="nav">
+                <Drawer
+                    variant={isMobile ? 'temporary' : 'permanent'}
+                    open={isMobile ? mobileOpen : true}
+                    onClose={handleDrawerToggle}
+                    sx={{
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                    }}
+                    ModalProps={{
+                        keepMounted: true, // Better open performance on mobile.
+                    }}
+                >
+                    {drawer}
+                </Drawer>
+            </Box>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerWidth}px)` } }}>
+                <Toolbar />
+                <Box>
+                    {children}
+                </Box>
+            </Box>
+        </Box>
+    );
 };
 
 export default Layout;

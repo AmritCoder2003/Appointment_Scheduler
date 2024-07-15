@@ -3,10 +3,10 @@ import { Navigate,useNavigate } from 'react-router-dom'
 import {useEffect} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
-import { setUser } from '../redux/user'
+import { setUser,reloadUserData } from '../redux/user'
 import { showLoading,hideLoading } from '../redux/alert'
 const ProtectRoute = (props) => {
-  const {user}=useSelector((state)=>state.user);
+  const {user,reloadUser}=useSelector((state)=>state.user);
   const dispatch=useDispatch();
   const navigate=useNavigate();
   const getUser=async()=>{
@@ -29,6 +29,7 @@ const ProtectRoute = (props) => {
       if(response.status===200){
 
         dispatch(setUser(response.data));
+        dispatch(reloadUserData(false));
       }else{
         localStorage.removeItem('token');
         navigate('/login');
@@ -41,10 +42,10 @@ const ProtectRoute = (props) => {
     }
   }
   useEffect(() => {
-    if(!user){
+    if(!user || reloadUser ){
       getUser();
     }
-  }, [user])
+  }, [user,reloadUser]);
 
   if(localStorage.getItem('token')){
     return props.children;

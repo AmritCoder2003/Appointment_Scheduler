@@ -18,4 +18,6 @@ router.post("/login",[check("email","Email is required").isEmail(),
 
 router.post("/userInfo",authMid,userInfo);
 
+
+
 export default router

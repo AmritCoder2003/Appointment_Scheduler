@@ -6,8 +6,10 @@ import Home from './pages/Home'
 import Home2 from './User/Home2'
 import Spinner from './components/Spinner'
 import Layout from './User/Layout'
+import DocForm from './Doctor/DocForm'
 import { useSelector } from 'react-redux'
 import ProtectRoute from './components/ProtectRoute'
+import Notifications from './components/Notifications'
 function App() {
   const loading = useSelector((state)=>state.alerts.loading)
   return (
@@ -27,7 +29,17 @@ function App() {
           <Layout/>
         </ProtectRoute>
       }/>
-
+      <Route path='/docForm' element={
+        <ProtectRoute>
+          <DocForm/>
+        </ProtectRoute>
+      }/>
+      
+      <Route path='/notifications' element={
+        <ProtectRoute>
+          <Notifications/>
+        </ProtectRoute>
+      }/>
     </Routes>
     </BrowserRouter>
   )
