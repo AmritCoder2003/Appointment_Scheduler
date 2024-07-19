@@ -73,8 +73,8 @@ export const userInfo=async (req,res)=>{
      if(!userinfo){
         return res.status(404).json({success:false,message:"User not found"});
      }
-     console.log(userinfo);
-     return res.status(200).json({success:true,message:"User found",userId:userinfo._id,name:userinfo.name,email:userinfo.email,isAdmin:userinfo.isAdmin,noti:userinfo.unwatchednoti,seennoti:userinfo.watchednoti});
+    //  console.log(userinfo);
+     return res.status(200).json({success:true,message:"User found",userId:userinfo._id,isDoctor:userinfo.isDoctor,name:userinfo.name,email:userinfo.email,isAdmin:userinfo.isAdmin,noti:userinfo.unwatchednoti,seennoti:userinfo.watchednoti});
    }catch(err){
     console.log(err);
     return res.status(500).json({success:false,message:err});

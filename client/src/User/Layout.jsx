@@ -24,7 +24,7 @@ const adminMenu = [
     { title: 'Home', path: '/home2', icon: <HomeIcon /> },
     { title: 'Users', path: '/users', icon: <AccountCircleIcon /> },
     { title: 'Doctors', path: '/doctors', icon: <GroupIcon /> },
-    { title: 'Profile', path: '/profile', icon: <LocalHospitalIcon /> },
+    { title: 'Profile', path: '/admin/profile', icon: <LocalHospitalIcon /> },
 ];
 
 const Layout = ({ children }) => {
@@ -44,12 +44,19 @@ const Layout = ({ children }) => {
         navigate(path);
     };
 
-    const renderMenu = user?.isAdmin ? adminMenu : userMenu;
+    const doctorMenu =  [
+        { title: 'Home', path: '/home2', icon: <HomeIcon /> },
+        { title: 'Appointments', path: '/appointments', icon: <ScheduleIcon /> },
+        { title: 'Profile', path: `/doctor/profile/${user?.userId}`, icon: <AccountCircleIcon /> },
+    ] ;
+
+    const renderMenu = user?.isAdmin ? adminMenu : user?.isDoctor ? doctorMenu : userMenu;
+    
 
     const drawer = (
         <Box sx={{ overflow: 'auto', backgroundColor: '#3f51b5', color: 'white', height: '100%' }}>
-            <Toolbar>
-               
+            <Toolbar sx={{size: 'large'}} >
+                {user?.isAdmin ? "Admin" : user?.isDoctor ? "Doctor" : "User"}
             </Toolbar>
             <List>
                 {renderMenu.map((item, index) => (
@@ -94,7 +101,6 @@ const Layout = ({ children }) => {
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton onClick={() => navigate('/notifications')} color="inherit">
-                            
                             <Badge  badgeContent={user?.noti?.length || 0} color="error">
                                 <NotificationsIcon />
                             </Badge>
@@ -104,7 +110,7 @@ const Layout = ({ children }) => {
                                 <Typography variant="body1" sx={{ ml: 2 }}>
                                     {user.isAdmin ? 'admin' : user.name || 'Guest'}
                                 </Typography>
-                                <Avatar sx={{ ml: 2 }}>{user.isAdmin ? 'Ad' : user.name?.charAt(0) || 'G'}</Avatar>
+                                <Avatar sx={{ ml: 2, bgcolor: 'success.main' }}>{user.isAdmin ? 'Ad' : user.name?.charAt(0) || 'G'}</Avatar>
                             </>
                         ) : (
                             <Typography variant="body1" sx={{ ml: 2 }}>

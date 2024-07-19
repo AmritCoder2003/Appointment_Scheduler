@@ -43,7 +43,7 @@ export const createDoc = async (req, res) => {
       doctorId: newdoctor._id,
       name: `${newdoctor.firstName} ${newdoctor.lastName}`,
     },
-    onClickPath: "/admin/notifications/doctor"
+    onClickPath: "/doctors"
   };
 
   try {
@@ -160,3 +160,65 @@ export const deleteAll = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+export const doctorInfo = async (req, res) => {
+  try {
+    const doctorId=req.body.userId;
+    //console.log(doctorId);
+    if (!doctorId) {
+       console.log("hello");
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const doctorInfo = await doctor.findOne({userId: doctorId});
+    //console.log(doctorInfo);
+    if (!doctorInfo) {
+      console.log("hello2");
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // console.log(doctorInfo);
+    return res.status(200).json({ success: true, data:doctorInfo });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+}
+
+
+export const doctorUpdate = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  try {
+    const doctorId = req.body.userId;
+    if (!doctorId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const doctorInfo = await doctor.findOne({ userId: doctorId });
+    if (!doctorInfo) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const updatedDoctor = await doctor.findOneAndUpdate(
+      { userId: doctorId },
+      {$set: { ...req.body }},
+      { new: true }
+      
+    );
+    return res.status(200).json({ success: true, data: updatedDoctor });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+
+
+
+}
+
+
+

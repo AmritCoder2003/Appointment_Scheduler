@@ -1,5 +1,5 @@
 import express from "express";
-import { createDoc,markSeen,deleteAll } from "../controllers/doctorController.js";
+import { createDoc,markSeen,deleteAll,doctorInfo,doctorUpdate } from "../controllers/doctorController.js";
 import { check } from "express-validator";
 import { authMid } from "../auth/authMid.js";
 const router = express.Router();
@@ -22,6 +22,15 @@ router.post(
   authMid,
   createDoc
 );
+
+router.post("/doctorinfo", authMid,doctorInfo);
+router.patch("/update",[check("fee","Fee is required").notEmpty(),
+  check("address","Address is required").notEmpty(),
+  check("experience","Experience is required").notEmpty(),
+  check("schedulefrom","Schedule From is required").notEmpty(),
+  check("scheduleto","Schedule To is required").notEmpty(),
+
+],authMid,doctorUpdate);
 
 router.post("/markAllAsSeen",authMid,markSeen);
 router.post("/deleteNotification",authMid,deleteAll);

@@ -10,6 +10,10 @@ import DocForm from './Doctor/DocForm'
 import { useSelector } from 'react-redux'
 import ProtectRoute from './components/ProtectRoute'
 import Notifications from './components/Notifications'
+import UserList from './Admin/UserList'
+import DoctorProfile from './Doctor/DoctorProfile'
+import DoctorList from './Admin/DoctorList'
+import AdminProfile from './Admin/AdminProfile'
 function App() {
   const loading = useSelector((state)=>state.alerts.loading)
   return (
@@ -40,7 +44,32 @@ function App() {
           <Notifications/>
         </ProtectRoute>
       }/>
+
+      <Route path='/users' element={
+        <ProtectRoute>
+          <UserList/>
+        </ProtectRoute>
+      }/>
+
+      <Route path='/doctors' element={
+        <ProtectRoute>
+          <DoctorList/>
+        </ProtectRoute>
+      }/>
+
+      <Route path='/doctor/profile/:id' element={
+        <ProtectRoute>
+          <DoctorProfile/>
+        </ProtectRoute>
+      }/>
+      <Route path='/admin/profile' element={
+        <ProtectRoute>
+          <AdminProfile/>
+        </ProtectRoute>
+      }
+      />
     </Routes>
+
     </BrowserRouter>
   )
 }
