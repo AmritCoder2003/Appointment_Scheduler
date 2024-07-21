@@ -1,5 +1,6 @@
 import doctor from "../models/doctor.js";
 import user from "../models/user.js";
+import appointment from "../models/appointment.js";
 import { validationResult } from "express-validator";
 import {nanoid} from "nanoid";
 export const createDoc = async (req, res) => {
@@ -220,5 +221,121 @@ export const doctorUpdate = async (req, res) => {
 
 }
 
+export const approvedDoctor = async (req, res) => {
+  try{
+    const doctors=await doctor.find({status:"Approved"});
+    return res.status(200).json({success:true,data:doctors,message:"Approved doctor fetched successfully"});
+  }catch(err){
+    return res.status(500).json({success:false,message:err.message});
+  }
+}
 
+export const getDoctorById= async (req, res) => {
+  const params= req.params.id;
 
+  try{
+    const doctorData=await doctor.findOne({_id:params});
+    return res.status(200).json({success:true,data:doctorData,message:"Doctor fetched successfully"});
+  }catch(err){
+    return res.status(500).json({success:false,message:err.message});
+  }
+}
+export const getAppointments = async (req, res) => {
+  const userId = req.body.userId;
+  // console.log(userId);
+  try {
+      // Find the doctor associated with the userId
+      const doc = await doctor.findOne({ userId });
+      
+      // Check if the doctor was found
+      if (!doc) {
+          return res.status(404).json({ success: false, message: "Doctor not found" });
+      }
+
+      //console.log(doc);
+      
+      // Find the appointments for the doctor
+      const appointments = await appointment.find({ doctorId: doc._id });
+      
+      //console.log(appointments);
+      return res.status(200).json({ success: true, data: appointments, message: "Appointments fetched successfully" });
+  } catch (err) {
+      return res.status(500).json({ success: false, message: err });
+  }
+}
+
+export const approvedAppointment = async (req, res) => {
+  try{
+     const params=req.params.id;
+     let appointmentData;
+     let notify;
+     try{
+      appointmentData=await appointment.findOne({_id:params});
+    
+     appointmentData.status="Approved";
+     appointmentData.save();
+     }
+     catch(err){
+       return res.status(500).json({success:false,message:err.message});
+     }
+     try{
+     const userId=appointmentData.userId;
+
+     const userInfo=await user.findOne({_id:userId});
+      notify=userInfo.unwatchednoti;
+     notify.push({
+       id:nanoid(),
+       type:"new-appointment-request-status-changed",
+       message:`Your appointment has been approved`,
+       onclickPath:"/notification"
+     });
+     await userInfo.save();
+    
+    }catch(err){
+      return res.status(500).json({success:false,message:err.message});
+    }
+   return res.status(200).json({success:true,data:appointmentData,message:"Appointment approved successfully"});
+  }catch(err){
+    return res.status(500).json({success:false,message:err.message});
+  }
+}
+
+export const deleteAppointment = async (req, res) => {
+  try{
+    const params=req.params.id;
+    let appointmentData;
+    let notify;
+    try{
+     appointmentData=await appointment.findOne({_id:params});
+   
+    appointmentData.status="Rejected";
+    
+    appointmentData.save();
+
+    }
+    catch(err){
+      return res.status(500).json({success:false,message:err.message});
+    }
+    try{
+    const userId=appointmentData.userId;
+
+    const userInfo=await user.findOne({_id:userId});
+     notify=userInfo.unwatchednoti;
+    notify.push({
+      id:nanoid(),
+      type:"new-appointment-request-status-changed",
+      message:`Your appointment has been Rejected`,
+      onclickPath:"/notification"
+    });
+    await userInfo.save();
+    appointmentData=await appointment.deleteOne({_id:params});
+    
+
+   }catch(err){
+     return res.status(500).json({success:false,message:err.message});
+   }
+  return res.status(200).json({success:true,data:appointmentData,message:"Appointment deleted successfully"});
+ }catch(err){
+   return res.status(500).json({success:false,message:err.message});
+ }
+}

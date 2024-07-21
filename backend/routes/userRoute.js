@@ -1,6 +1,6 @@
 
 import express from "express";
-import {createUser,loginUser,userInfo} from "../controllers/userController.js";
+import {createUser,loginUser,getAppointments,userInfo,appointmentBooking,checkAvailability} from "../controllers/userController.js";
 import {check} from "express-validator";
 import { authMid } from "../auth/authMid.js";
 const router=express.Router();
@@ -16,8 +16,13 @@ router.post("/login",[check("email","Email is required").isEmail(),
 ],loginUser);
 
 
+router.post("/appointment-booking",authMid,appointmentBooking);
+
+
 router.post("/userInfo",authMid,userInfo);
 
+router.post("/check-availability",authMid,checkAvailability);
 
+router.get("/getAppointments",authMid,getAppointments);
 
 export default router

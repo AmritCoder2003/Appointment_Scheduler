@@ -16,9 +16,10 @@ import { useSelector } from 'react-redux';
 const drawerWidth = 240;
 const userMenu = [
     { title: 'Home', path: '/home2', icon: <HomeIcon /> },
-    { title: 'Appointments', path: '/appointments', icon: <ScheduleIcon /> },
+    { title: 'Appointments', path: '/user/appointments', icon: <ScheduleIcon /> },
     { title: 'Apply Doctor', path: '/docForm', icon: <LocalHospitalIcon /> },
     { title: 'Profile', path: '/profile', icon: <AccountCircleIcon /> },
+    
 ];
 const adminMenu = [
     { title: 'Home', path: '/home2', icon: <HomeIcon /> },
@@ -46,7 +47,7 @@ const Layout = ({ children }) => {
 
     const doctorMenu =  [
         { title: 'Home', path: '/home2', icon: <HomeIcon /> },
-        { title: 'Appointments', path: '/appointments', icon: <ScheduleIcon /> },
+        { title: 'Appointments', path: '/doctor/appointments', icon: <ScheduleIcon /> },
         { title: 'Profile', path: `/doctor/profile/${user?.userId}`, icon: <AccountCircleIcon /> },
     ] ;
 

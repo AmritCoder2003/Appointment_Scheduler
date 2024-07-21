@@ -26,7 +26,7 @@ const validationSchema = Yup.object({
 const UpdateDoctor = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user?.user);
-  const navigate = useNavigate();
+
 
 
   const getUser = async () => {

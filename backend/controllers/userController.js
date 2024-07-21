@@ -3,6 +3,9 @@ import user from "../models/user.js";
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { validationResult } from 'express-validator';
+import appointment from '../models/appointment.js';
+import {nanoid} from "nanoid";
+import moment from 'moment';
 dotenv.config();
 export const createUser=async (req,res)=>{
     const errors=validationResult(req);
@@ -81,3 +84,86 @@ export const userInfo=async (req,res)=>{
    }
 }
 
+export const appointmentBooking = async (req, res) => {
+    try {
+        req.body.status = "pending";
+        req.body.date=moment(req.body.date, 'YYYY-MM-DD').toISOString();
+        req.body.time=moment(req.body.time, 'HH:mm').toISOString();
+
+        const newAppointment= new appointment(req.body);
+         await newAppointment.save();
+        
+        try {
+            const id = req.body.doctorInfo.userId;
+           
+
+            const doctorfind = await user.findById(id);
+
+            if (!doctorfind) {
+                return res.status(404).json({ success: false, message: "Doctor not found" });
+            }
+            const notify=doctorfind.unwatchednoti;
+            
+            notify.push({
+                id: nanoid(),
+                type: "new-appointment-request",
+                message: `${req.body.userInfo.name} has booked an appointment with you.`,
+                onclickPath: "/doctor/appointments"
+            });
+           
+
+            try {
+                await doctorfind.save();
+                return res.status(200).json({ success: true, message: "Appointment booked successfully" });
+            } catch (saveErr) {
+                return res.status(500).json({ success: false, message: "Failed to save notification: " + saveErr.message });
+            }
+
+        } catch (findErr) {
+            return res.status(500).json({ success: false, message: "Failed to find doctor: " + findErr.message });
+        }
+
+    } catch (initialErr) {
+        return res.status(500).json({ success: false, message: "Unexpected error: " + initialErr.message });
+    }
+};
+
+
+
+export const checkAvailability = async (req, res) => {
+    const doctorId = req.body.doctorId;
+    console.log(doctorId);
+    console.log(req.body.date);
+    console.log(req.body.time);
+    const date = moment(req.body.date, 'YYYY-MM-DD').toISOString();
+    console.log(date);
+    const fromtime=moment(req.body.time, 'HH:mm').subtract(30, 'minutes').toISOString();
+    console.log(fromtime);
+    const totime=moment(req.body.time, 'HH:mm').add(30, 'minutes').toISOString();
+    console.log(totime);
+    const appointments=await appointment.find({
+        doctorId,
+        date,
+        time:{$gte:fromtime,$lte:totime},
+    
+    });
+    console.log(appointments);
+    if(appointments.length>0){
+        return res.status(200).json({ success: false, message: "Appointment already booked" });
+    }else{
+        return res.status(200).json({ success: true, message: "Appointment available" });
+    }
+    
+
+};
+
+
+export const getAppointments = async (req, res) => {
+    const userId = req.body.userId;
+    try{
+        const appointments=await appointment.find({userId});
+        return res.status(200).json({success:true,data:appointments,message:"Appointments fetched successfully"});
+    }catch(err){
+        return res.status(500).json({success:false,message:err});
+    }
+}

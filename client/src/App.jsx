@@ -1,4 +1,3 @@
-
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -14,6 +13,10 @@ import UserList from './Admin/UserList'
 import DoctorProfile from './Doctor/DoctorProfile'
 import DoctorList from './Admin/DoctorList'
 import AdminProfile from './Admin/AdminProfile'
+import BookAppointment from './User/BookAppointment'
+import UserAppointments from './User/UserAppointments'
+import PageNotFound from './pages/PageNotFound'
+import DoctorAppointments from './Doctor/DoctorAppointments'
 function App() {
   const loading = useSelector((state)=>state.alerts.loading)
   return (
@@ -68,10 +71,31 @@ function App() {
         </ProtectRoute>
       }
       />
-    </Routes>
+       <Route path='/book-appointment/:id' element={
+        <ProtectRoute>
+          <BookAppointment/>
+        </ProtectRoute>
+      }
+      />
+
+      <Route path='/doctor/appointments/' element={
+        <ProtectRoute>
+          <DoctorAppointments/>
+        </ProtectRoute>
+      }
+      />
+      <Route path='/user/appointments' element={
+        <ProtectRoute>
+          <UserAppointments/>
+        </ProtectRoute>
+      }
+      />
+      <Route path='*' element={<PageNotFound />} />
+      </Routes>
 
     </BrowserRouter>
   )
 }
 
 export default App
+
